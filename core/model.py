@@ -21,7 +21,7 @@ from core.wing import FAN
 
 
 class ResBlk(nn.Module):
-    def __init__(self, dim_in, dim_out, actv=nn.ELU(),
+    def __init__(self, dim_in, dim_out, actv=nn.ELU(0.5),
                  normalize=False, downsample=False):
         super().__init__()
         self.actv = actv
@@ -79,7 +79,7 @@ class AdaIN(nn.Module):
 
 class AdainResBlk(nn.Module):
     def __init__(self, dim_in, dim_out, style_dim=64, w_hpf=0,
-                 actv=nn.ELU(), upsample=False):
+                 actv=nn.ELU(0.5), upsample=False):
         super().__init__()
         self.w_hpf = w_hpf
         self.actv = actv
@@ -143,7 +143,7 @@ class Generator(nn.Module):
         self.decode = nn.ModuleList()
         self.to_rgb = nn.Sequential(
             nn.InstanceNorm2d(dim_in, affine=True),
-            nn.ELU(),
+            nn.ELU(0.5),
             nn.Conv2d(dim_in, 3, 1, 1, 0))
 
         # down/up-sampling blocks
@@ -232,9 +232,9 @@ class StyleEncoder(nn.Module):
             blocks += [ResBlk(dim_in, dim_out, downsample=True)]
             dim_in = dim_out
 
-        blocks += [nn.ELU()]
+        blocks += [nn.ELU(0.5)]
         blocks += [nn.Conv2d(dim_out, dim_out, 4, 1, 0)]
-        blocks += [nn.ELU()]
+        blocks += [nn.ELU(0.5)]
         self.shared = nn.Sequential(*blocks)
 
         self.unshared = nn.ModuleList()
@@ -266,9 +266,9 @@ class Discriminator(nn.Module):
             blocks += [ResBlk(dim_in, dim_out, downsample=True)]
             dim_in = dim_out
 
-        blocks += [nn.ELU()]
+        blocks += [nn.ELU(0.5)]
         blocks += [nn.Conv2d(dim_out, dim_out, 4, 1, 0)]
-        blocks += [nn.ELU()]
+        blocks += [nn.ELU(0.5)]
         blocks += [nn.Conv2d(dim_out, num_domains, 1, 1, 0)]
         self.main = nn.Sequential(*blocks)
 
